@@ -7,12 +7,15 @@ from bs4 import BeautifulSoup
 
 #The url base should work for MMSI and IMO numbers
 #sometimes a minus sign is required to precede the number, haven't yet figured out exactly when that applies
+#We also have to spoof the user-agent header or we'll be redirected to a junk page
+#urlbase = 'http://www.marinetraffic.con/en/ais/details/ships/'
 urlbase = 'http://new.marinetraffic.com/en/ais/details/ships/'
-req = urllib2.Request(urlbase + '9164653')
+req = urllib2.Request(urlbase + '372359000',
+  headers={'User-Agent':'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/30.0.1599.101 Safari/537.36'})
 response = urllib2.urlopen(req)
 the_page = response.read()
 #HTTPError
-#print the_page
+print the_page
 dt = datetime.datetime.now()
 soup = BeautifulSoup(the_page)
 
@@ -44,7 +47,14 @@ for i in details2_content:
         ship[k.strip().replace(" ", "")] = v.strip()
 
 #ship now contains all our vessel details we can get
+print ship
+#<h1 class="details_header_vessel">MSC POH LIN</h1>
 
-vname = namediv.get_text().strip()
-print vname
 
+#bob = iter(detdiv[0])
+#print str(len(detdiv[0]))
+#for i in something:
+#    #print str(i)
+#    dastring = str(i).strip()
+#    print dastring
+#    print "========"
