@@ -22,7 +22,7 @@ def GetIncompleteShips():
     return rows
 
 def UpdateVesselDetailsFromMmsi(LRImo, Vessel, Cs, Gton, Dw, Flag, Built, Type, Status, Source, Length, Beam, MMSI):
-    cur.execute("""UPDATE vesseldetails SET imo = %(imonum)s, name = %(vname)s, callsign = %(call)s, tonnage = %(grosston)s, deadweight = %(dead)s, flag = %(fl)s, yearbuilt = %(build)s, type = %(vtype)s, status = %(stat)s, datasource = %(ds)s, length=%(len)s, beam=%(beam)s, updatedate = now() WHERE mmsi = %(mmsi)s;""", {'imonum':LRImo, 'vname':Vessel, 'call':Cs, 'grosston':Gton, 'dead':Dw, 'fl':Flag, 'build':Built, 'vtype':Type, 'stat':Status, 'ds':Source, 'len':Length, 'beam':Beam, 'mmsi':MMSI})
+    cur.execute("""UPDATE vesseldetails SET imo = %(imonum)s, name = %(vname)s, callsign = %(call)s, tonnage = %(grosston)s, deadweight = %(dead)s, flag = %(fl)s, yearbuilt = %(build)s, type = %(vtype)s, status = %(stat)s, datasource = %(ds)s, length=%(len)s, beam=%(beam)s, updatedate = now() WHERE mmsi = %(mmsi)s;""", {'imonum':LRImo, 'vname':Vessel, 'call':Cs, 'grosston':Gton.replace("-",""), 'dead':Dw.replace("-",""), 'fl':Flag, 'build':Built, 'vtype':Type, 'stat':Status, 'ds':Source, 'len':Length.replace("-",""), 'beam':Beam.replace("-",""), 'mmsi':MMSI})
     conn.commit()
 
 def UpdateNullVesselFromMmsi(MMSI):
