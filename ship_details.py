@@ -5,16 +5,18 @@ import saisdb
 
 '''Queries marinetraffic.com with mmsi/imo numbers to retrieve ship details'''
 '''David Graham 11/11/2013'''
-
+'''
 #Get the list of ships
-#ships = saisdb.GetIncompleteShips()
+ships = saisdb.GetIncompleteShips()
 #print ships
 
+for s in ships:
+'''
 #The url base should work for MMSI and IMO numbers
 #sometimes a minus sign is required to precede the number, haven't yet figured out exactly when that applies
 try:
     urlbase = 'http://new.marinetraffic.com/en/ais/details/ships/'
-    req = urllib2.Request(urlbase + '372359000',
+    req = urllib2.Request(urlbase + '280',
     headers={'User-Agent':'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/30.0.1599.101 Safari/537.36'})
     response = urllib2.urlopen(req)
     the_page = response.read()
@@ -54,10 +56,20 @@ try:
 
     vname = namediv.get_text().strip()
     print vname
-    print ship
-
+    #print ship
+    lb = ship['LengthxBreadth'].split("x")
+    #weatherdb.SaveRiver(obsdate, river_flow, river_height)
     #UpdateVesselDetailsFromMmsi(LRImo, Vessel, Cs, Gton, Dw, Flag, Built, Type, Status, Source, Length, Beam)
+    saisdb.UpdateVesselDetailsFromMmsi(ship['IMO'], ship['name'], ship['CallSign'], ship['GrossTonnage'], ship['DeadWeight'], ship['Flag'], ship['YearBuilt'], ship['Type'], ship['Status'], 'new.marinetraffic.com', lb[0].replace("m",""), lb[1].replace("m","")
+
+except urllib2.HTTPError, e:
+    if e.code == 404:
+        saisdb.UpdateNullVesselFromMmsi(MMSI)
+    else:
+        #some other error, probably no network, just keep going
+        pass
 
 except Exception as e:
-#    print 'Something didn''t work.'
-    print str(repr(e))
+    #just keep going
+    pass
+    #print str(repr(e))
