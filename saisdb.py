@@ -15,16 +15,16 @@ to_timestamp(%(movedt)s, 'YYYY-MM-DD HH24:MI:SS:MS'), %(moveid)s,%(ship)s,%(type
     conn.commit()
 
 def GetIncompleteShips():
-    cur.execute("""SELECT DISTINCT(mmsi) FROM vesseldetails WHERE updatedate IS NULL LIMIT 50;""")
+    cur.execute("""SELECT DISTINCT(mmsi) FROM vesseldetails WHERE updatedate IS NULL LIMIT 10;""")
     rows = cur.fetchall()
-    cur.close()
+    #cur.close()
     conn.commit()
     return rows
 
 def UpdateVesselDetailsFromMmsi(LRImo, Vessel, Cs, Gton, Dw, Flag, Built, Type, Status, Source, Length, Beam, MMSI):
-    cur.execute("""UPDATE vesseldetails SET imo = %(imonum), name = %(vname), callsign = %(call), tonnage = %(grosston), deadweight = %(dead), flag = %(fl), yearbuilt = %(build), type = %(vtype), status = %(stat), datasource = %(ds), length=%(len), beam=%(beam), updatedate = now() WHERE mmsi = %(mmsi);""", {'imonum':LRImo, 'vname':Vessel, 'call':Cs, 'grosston':Gton, 'dead':Dw, 'fl':Flag, 'build':Built, 'vtype':Type, 'stat':Status, 'ds':Source, 'len':Length, 'beam':Beam, 'mmsi':MMSI})
+    cur.execute("""UPDATE vesseldetails SET imo = %(imonum)s, name = %(vname)s, callsign = %(call)s, tonnage = %(grosston)s, deadweight = %(dead)s, flag = %(fl)s, yearbuilt = %(build)s, type = %(vtype)s, status = %(stat)s, datasource = %(ds)s, length=%(len)s, beam=%(beam)s, updatedate = now() WHERE mmsi = %(mmsi)s;""", {'imonum':LRImo, 'vname':Vessel, 'call':Cs, 'grosston':Gton, 'dead':Dw, 'fl':Flag, 'build':Built, 'vtype':Type, 'stat':Status, 'ds':Source, 'len':Length, 'beam':Beam, 'mmsi':MMSI})
     conn.commit()
 
 def UpdateNullVesselFromMmsi(MMSI):
-    cur.execute("""UPDATE vesseldetails SET updatedate = timestamp(0) WHERE mmsi = %(mmsi);""", {'mmsi':MMSI})
+    cur.execute("""UPDATE vesseldetails SET updatedate = to_timestamp(0) WHERE mmsi = %(mmsi)s;""", {'mmsi':MMSI})
     conn.commit()
