@@ -1,5 +1,6 @@
 import datetime
 import urllib2
+import re
 from bs4 import BeautifulSoup
 import saisdb
 
@@ -58,20 +59,41 @@ for s in ships:
         vname = namediv.get_text().strip()
         print vname
         #print ship
+        ship['LengthxBreadth'] = re.sub("m", "", ship['LengthxBreadth'])
+        print ship['LengthxBreadth']
         lb = ship['LengthxBreadth'].split("x")
-        '''print 'IMO: ' +ship['IMO']
+        if ship['GrossTonnage']=='-':
+            ship['GrossTonnage']=None
+        if ship['DeadWeight']=='-':
+            ship['DeadWeight']=None
+        if ship['YearBuilt']=='-':
+            ship['YearBuilt']=None
+        if ship['YearBuilt']=='-':
+            ship['YearBuilt']=None
+        if len(lb) == 2:
+            if lb[0] == '-':
+                lb[0] = None
+            if lb[1] == '-':
+                lb[1] = None
+        else:
+            lb = None
+            lb = []
+            lb.append(None)
+            lb.append(None)
+
+        print 'IMO: ' +ship['IMO']
         print 'NAME: ' + ship['name']
         print 'CALLSIGN: ' + ship['CallSign']
-        print 'GROSS TON: ' + ship['GrossTonnage']
-        print 'DEAD: ' + ship['DeadWeight']
+        print 'GROSS TON: ' + str(ship['GrossTonnage'])
+        print 'DEAD: ' + str(ship['DeadWeight'])
         print 'FLAG: ' + ship['Flag']
-        print 'YEAR: ' + ship['YearBuilt']
+        print 'YEAR: ' + str(ship['YearBuilt'])
         print 'TYPE: ' + ship['Type']
         print 'STATUS: ' + ship['Status']
-        print 'LEN: ' + lb[0].replace("m","")
-        print 'BEAM: ' + lb[1].replace("m","")
-        print 'MMSI: ' + ship[0]'''
-        saisdb.UpdateVesselDetailsFromMmsi(ship['IMO'], ship['name'], ship['CallSign'], ship['GrossTonnage'], ship['DeadWeight'], ship['Flag'], ship['YearBuilt'], ship['Type'], ship['Status'], 'new.marinetraffic.com', lb[0].replace("m",""), lb[1].replace("m",""), s[0])
+        print 'LEN: ' + str(lb[0])
+        print 'BEAM: ' + str(lb[1])
+        print 'MMSI: ' + s[0]
+        saisdb.UpdateVesselDetailsFromMmsi(ship['IMO'], ship['name'], ship['CallSign'], ship['GrossTonnage'], ship['DeadWeight'], ship['Flag'], ship['YearBuilt'], ship['Type'], ship['Status'], 'new.marinetraffic.com', lb[0], lb[1], s[0])
 
     except urllib2.HTTPError as e:
         if e.code == 404:
