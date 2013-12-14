@@ -4,3 +4,8 @@ FROM sais_reports
 WHERE ID IN (
 --<ID LIST FROM R SCRIPT>
 )
+
+
+select '<Placemark id="' || testID || '"><description>' || mmsi || ' - ' || reportdate || '</description>' || ST_AsKML(reportedpoint) || '</Placemark>'
+FROM sais_test
+where testID in
