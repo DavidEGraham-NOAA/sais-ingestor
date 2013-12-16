@@ -12,7 +12,10 @@ import saisdb
 #csv_file = '/media/Seagate Backup Plus Drive/GIS/sais_IHS/reextracts/combinedhistorydata jan-june 2008 .txt'
 #csv_file = '/media/Seagate Backup Plus Drive/GIS/sais_IHS/reextracts/combinedhistorydata july-dec 2008 .txt'
 #csv_file = '/media/Seagate Backup Plus Drive/GIS/sais_IHS/reextracts/combinedhistorydata jan-june 2009.txt'
-csv_file = '/media/Seagate Backup Plus Drive/GIS/sais_IHS/reextracts/combinedhistorydata july-dec 2009 .txt'
+#csv_file = '/media/Seagate Backup Plus Drive/GIS/sais_IHS/reextracts/combinedhistorydata july-dec 2009 .txt'
+#csv_file = '/media/NANO PRO/reextracts/combinedhistorydata jan-jun 2010.txt'
+#csv_file = '/media/NANO PRO/reextracts/combinedhistorydata july-dec 2010 .txt'
+csv_file = '/media/NANO PRO/reextracts/combinedhistorydata jan_july 2011 .txt'
 
 # open csv file
 with open(csv_file, 'rb') as csvfile:
