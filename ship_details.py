@@ -6,10 +6,13 @@ import saisdb
 
 '''Queries marinetraffic.com with mmsi/imo numbers to retrieve ship details'''
 '''David Graham 11/11/2013'''
+'''Completely rewritten 10/24/2014 to account for new version of marinetraffic.com'''
 
 #Get the list of ships
 ships = saisdb.GetIncompleteShips()
 ships.pop(0)
+ships = []
+#ships.append('636016101')
 #print ships
 
 for s in ships:
@@ -17,8 +20,8 @@ for s in ships:
     #The url base should work for MMSI and IMO numbers
     #sometimes a minus sign is required to precede the number, haven't yet figured out exactly when that applies
     #MMSI = '440272000'
-    urlbase = 'http://new.marinetraffic.com/en/ais/details/ships/'
-    req = urllib2.Request(urlbase + s[0],
+    urlbase = 'http://www.marinetraffic.com/ais/details/ships/370642000'
+    req = urllib2.Request(urlbase,
     headers={'User-Agent':'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/30.0.1599.101 Safari/537.36'})
 
     try:
@@ -29,73 +32,48 @@ for s in ships:
         dt = datetime.datetime.now()
         soup = BeautifulSoup(the_page)
 
-        maindiv = soup.find("div", {"class": "details_under_1"})
+        maindiv = soup.findAll("div", {"class": "col-xs-6"})
+        shipvalues = []
+        for row in maindiv:
+            for b in row.findAll("b"):
+                shipvalues.append(str(b).replace("<b>", "").replace("</b>", ""))
+        print shipvalues
         ship = {}
-        namediv = soup.find("h1", {"class": "details_header_vessel"})
-        ship['name'] = namediv.get_text().strip()
-        #print maindiv
+        namediv = soup.find("h1", {"class": "font-200 no-margin"})
+        #ship['name'] = namediv.get_text().strip()
+        print ship['name']
         #print "------------------------"
-        detdiv = maindiv.findAll("div",{"class": "details_under_1_div"})
-        #print detdiv[0]
-        #print type(detdiv[0])
-        details1 = detdiv[0].get_text().strip()
-        #print something
-
-        details1_content = details1.splitlines()
-        for i in details1_content:
-            if (i != ''):
-                k,v = i.split(':')
-                ship[k.strip().replace(" ", "")] = v.strip()
-                #print i.strip()
-
-        details2 = detdiv[1].get_text().strip()
-        details2_content = details2.splitlines()
-        #print details2_content
-        for i in details2_content:
-            if (i != ''):
-                k,v = i.split(':')
-                ship[k.strip().replace(" ", "")] = v.strip()
-
-        #ship now contains all our vessel details we can get
-
-        vname = namediv.get_text().strip()
-        print vname
-        #print ship
-        ship['LengthxBreadth'] = re.sub("m", "", ship['LengthxBreadth'])
-        print ship['LengthxBreadth']
+        ship['IMO'] = shipvalues[0]
+        ship['MMSI'] = shipvalues[1]
+        ship['CallSign'] = shipvalues[2]
+        ship['Flag'] = shipvalues[3]
+        ship['Type'] = shipvalues[4]
+        ship['LengthxBreadth'] = shipvalues[7].replace(" \xc3\x97 ", "x")
         lb = ship['LengthxBreadth'].split("x")
-        if ship['GrossTonnage']=='-':
-            ship['GrossTonnage']=None
-        if ship['DeadWeight']=='-':
-            ship['DeadWeight']=None
-        if ship['YearBuilt']=='-':
-            ship['YearBuilt']=None
-        if ship['YearBuilt']=='-':
-            ship['YearBuilt']=None
         if len(lb) == 2:
             if lb[0] == '-':
                 lb[0] = None
             if lb[1] == '-':
                 lb[1] = None
+            lb[0] = lb[0].replace("m", "")
+            lb[1] = lb[1].replace("m", "")
+
         else:
             lb = None
             lb = []
             lb.append(None)
             lb.append(None)
 
-        print 'IMO: ' +ship['IMO']
-        print 'NAME: ' + ship['name']
-        print 'CALLSIGN: ' + ship['CallSign']
-        print 'GROSS TON: ' + str(ship['GrossTonnage'])
-        print 'DEAD: ' + str(ship['DeadWeight'])
-        print 'FLAG: ' + ship['Flag']
-        print 'YEAR: ' + str(ship['YearBuilt'])
-        print 'TYPE: ' + ship['Type']
-        print 'STATUS: ' + ship['Status']
-        print 'LEN: ' + str(lb[0])
-        print 'BEAM: ' + str(lb[1])
-        print 'MMSI: ' + s[0]
-        saisdb.UpdateVesselDetailsFromMmsi(ship['IMO'], ship['name'], ship['CallSign'], ship['GrossTonnage'], ship['DeadWeight'], ship['Flag'], ship['YearBuilt'], ship['Type'], ship['Status'], 'new.marinetraffic.com', lb[0], lb[1], s[0])
+        ship['GrossTonnage'] = shipvalues[5]
+        ship['DeadWeight'] = shipvalues[6].replace(" t", "")
+        ship['YearBuilt'] = shipvalues[8]
+        ship['Status'] = shipvalues[9]
+        #print ship
+        #print lb[0]
+        #print lb[1]
+        #print "here"
+        #print type(detdiv[0])
+        saisdb.UpdateVesselDetailsFromMmsi(ship['IMO'], ship['name'], ship['CallSign'], ship['GrossTonnage'], ship['DeadWeight'], ship['Flag'], ship['YearBuilt'], ship['Type'], ship['Status'], 'www.marinetraffic.com', lb[0], lb[1], ship['MMSI'])
 
     except urllib2.HTTPError as e:
         if e.code == 404:
