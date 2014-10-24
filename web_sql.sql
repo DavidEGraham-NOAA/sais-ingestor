@@ -27,17 +27,21 @@ where fk_trackid = sq.trackid
 
 select * from mvw_track_details
 
-CREATE VIEW vw_track_details AS
+drop view vw_track_details
+
+CREATE OR REPLACE VIEW vw_track_details AS
 SELECT DISTINCT v.fk_trackid, 
-	to_char(startdate, 'MM/DD/YYYY') AS startdate, 
-	to_char(enddate, 'MM/DD/YYYY') AS enddate, 
+	to_char(startdate, 'MM/DD/YYYY') AS sdformatted, 
+	to_char(enddate, 'MM/DD/YYYY') AS edformatted, 
 	vd.name,
 	vd.mmsi,
 	features_intersected, 
 	atbas_intersected, 
 	pointcount, 
 	v.length,
-	ta.invalid
+	ta.invalid,
+	startdate,
+	enddate
 FROM mvw_track_details v
 	LEFT OUTER JOIN vesseldetails vd on vd.mmsi = v.mmsi
 	LEFT OUTER JOIN track_analysis ta on ta.fk_trackid = v.fk_trackid
