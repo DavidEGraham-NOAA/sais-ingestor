@@ -9,9 +9,11 @@ import saisdb
 
 #Get the list of ships
 ships = saisdb.GetIncompleteShips()
+ships.pop(0)
 #print ships
 
 for s in ships:
+    print "ship: " + str(s[0])
     #The url base should work for MMSI and IMO numbers
     #sometimes a minus sign is required to precede the number, haven't yet figured out exactly when that applies
     #MMSI = '440272000'
