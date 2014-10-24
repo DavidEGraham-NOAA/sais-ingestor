@@ -47,3 +47,10 @@ FROM mvw_track_details v
 	LEFT OUTER JOIN track_analysis ta on ta.fk_trackid = v.fk_trackid
 
 select * from vw_track_details
+
+insert into vesseldetails (mmsi)  
+(select o.mmsi AS mmsi
+from ihs_observations o
+left join vesseldetails v on o.mmsi = v.mmsi
+where v.mmsi is null
+group by o.mmsi) sq
