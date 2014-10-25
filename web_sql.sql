@@ -29,22 +29,23 @@ select * from mvw_track_details
 
 drop view vw_track_details
 
-CREATE OR REPLACE VIEW vw_track_details AS
-SELECT DISTINCT v.fk_trackid, 
-	to_char(startdate, 'MM/DD/YYYY') AS sdformatted, 
-	to_char(enddate, 'MM/DD/YYYY') AS edformatted, 
-	vd.name,
-	vd.mmsi,
-	features_intersected, 
-	atbas_intersected, 
-	pointcount, 
-	v.length,
-	ta.invalid,
-	startdate,
-	enddate
-FROM mvw_track_details v
-	LEFT OUTER JOIN vesseldetails vd on vd.mmsi = v.mmsi
-	LEFT OUTER JOIN track_analysis ta on ta.fk_trackid = v.fk_trackid
+CREATE OR REPLACE VIEW public.vw_track_details AS 
+ SELECT DISTINCT v.fk_trackid,
+    to_char(v.startdate, 'MM/DD/YYYY'::text) AS sdformatted,
+    to_char(v.enddate, 'MM/DD/YYYY'::text) AS edformatted,
+    vd.name,
+    v.mmsi,
+    v.features_intersected,
+    v.atbas_intersected,
+    v.pointcount,
+    v.length,
+    ta.invalid,
+    ta.ta_id,
+    v.startdate,
+    v.enddate
+   FROM mvw_track_details v
+     LEFT JOIN vesseldetails vd ON vd.mmsi::text = v.mmsi::text
+     LEFT JOIN track_analysis ta ON ta.fk_trackid = v.fk_trackid;
 
 select * from vw_track_details
 
